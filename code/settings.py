@@ -1,8 +1,9 @@
 # general setup
 TILE_SIZE = 64
 WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+WINDOW_HEIGHT = 685
 ANIMATION_SPEED = 8
+TITLE = 'Pirate Game - Mario Style'
 
 # editor graphics 
 EDITOR_DATA = {
