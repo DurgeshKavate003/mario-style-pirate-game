@@ -9,7 +9,7 @@ from settings import *
 from support import *
 
 from menu import Menu
-from timer import Timer
+from timer_ import Timer
 
 class Editor:
     def __init__(self, land_tiles):
@@ -136,6 +136,7 @@ class Editor:
             if sprite.rect.collidepoint(mouse_pos()):
                 return sprite
 
+    
     # Input
     def event_loop(self):
         for event in pygame.event.get():
@@ -308,6 +309,73 @@ class Editor:
                 self.display_surface.blit(surf, rect)
         self.canvas_objects.draw(self.display_surface)
 
+    def preview(self):
+        selected_object = self.mouse_on_object()
+        if not self.menu.rect.collidepoint(mouse_pos()):
+            if selected_object:
+                rect = selected_object.rect.inflate(10, 10)
+                color = 'black'
+                width = 3
+                size = 15
+
+                # TopLeft
+                pygame.draw.lines(
+                    self.display_surface,
+                    color,
+                    False,
+                    (
+                        (rect.left, rect.top + size),
+                        rect.topleft,
+                        (rect.left + size, rect.top)
+                    ),
+                    width
+                )
+
+                # TopRight
+                pygame.draw.lines(
+                    self.display_surface,
+                    color,
+                    False,
+                    (
+                        (rect.right - size, rect.top),
+                        rect.topright,
+                        (rect.right, rect.top + size)
+                    ),
+                    width
+                )
+
+                # BottomRight
+                pygame.draw.lines(
+                    self.display_surface,
+                    color,
+                    False,
+                    (
+                        (rect.right - size, rect.bottom),
+                        rect.bottomright,
+                        (rect.right, rect.bottom - size)
+                    ),
+                    width
+                )
+
+                # BottomLeft
+                pygame.draw.lines(
+                    self.display_surface,
+                    color,
+                    False,
+                    (
+                        (rect.left + size, rect.bottom),
+                        rect.bottomleft,
+                        (rect.left, rect.bottom - size)
+                    ),
+                    width
+                )
+                # Draw lines around objects when hovered over
+            else:
+                type_dict = {key: value['type'] for key, value in EDITOR_DATA.items()}
+                # Tile
+
+                # Object
+
 
     # Update
     def run(self, dt):
@@ -324,6 +392,7 @@ class Editor:
         self.draw_level()
         self.draw_tile_lines()
         pygame.draw.circle(self.display_surface, 'red', self.origin, 10)
+        self.preview()
         self.menu.display(self.selection_index)
 
 class CanvasTile:
@@ -371,7 +440,6 @@ class CanvasTile:
             self.is_empty = True
 
 class CanvasObjects(pygame.sprite.Sprite):
-
     def __init__(self, pos, frames, tile_id, origin, group):
         super().__init__(group)
 
