@@ -9,7 +9,7 @@ from settings import *
 from support import *
 
 from menu import Menu
-from timer import Timer
+from timer_ import Timer
 
 class Editor:
     def __init__(self, land_tiles):
