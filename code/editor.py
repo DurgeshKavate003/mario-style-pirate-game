@@ -124,6 +124,9 @@ class Editor:
                                         'frames': graphics,
                                         'length': len(graphics)
                                         }
+                
+        # Preview
+        self.preview_surfs = {key: load(value['preview']) for key, value in EDITOR_DATA.items() if value['preview']}
 
     def animation_updates(self, dt):
         for value in self.animations.values():
@@ -372,9 +375,18 @@ class Editor:
                 # Draw lines around objects when hovered over
             else:
                 type_dict = {key: value['type'] for key, value in EDITOR_DATA.items()}
-                # Tile
+                surf = self.preview_surfs[self.selection_index].copy()
+                surf.set_alpha(200)
 
+                # Tile
+                if type_dict[self.selection_index] == 'tile':
+                    current_cell = self.get_current_cell()
+                    rect = surf.get_rect(topleft = self.origin + vector(current_cell) * TILE_SIZE)
                 # Object
+                else:
+                    rect = surf.get_rect(center = mouse_pos())
+
+                self.display_surface.blit(surf, rect)
 
 
     # Update
