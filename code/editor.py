@@ -7,7 +7,9 @@ from pygame.image import load
 
 from settings import *
 from support import *
+
 from menu import Menu
+from timer import Timer
 
 class Editor:
     def __init__(self, land_tiles):
@@ -39,6 +41,8 @@ class Editor:
         # Objects
         self.canvas_objects = pygame.sprite.Group()
         self.canvas_drag_active = False
+
+        self.object_timer = Timer(400)
 
         # Player
         CanvasObjects(
@@ -127,6 +131,10 @@ class Editor:
             if value['frame index'] >= value['length']:
                 value['frame index'] = 0
 
+    def mouse_on_object(self):
+        for sprite in self.canvas_objects:
+            if sprite.rect.collidepoint(mouse_pos()):
+                return sprite
 
     # Input
     def event_loop(self):
@@ -193,17 +201,27 @@ class Editor:
                     self.last_selected_cell = current_cell
 
             else: # Object
-                CanvasObjects(
-                    pos = mouse_pos(),
-                    frames = self.animations[self.selection_index]['frames'],
-                    tile_id = self.selection_index,
-                    origin = self.origin,
-                    group = self.canvas_objects
-                )
+                if not self.object_timer.active:
+                    CanvasObjects(
+                        pos = mouse_pos(),
+                        frames = self.animations[self.selection_index]['frames'],
+                        tile_id = self.selection_index,
+                        origin = self.origin,
+                        group = self.canvas_objects
+                    )
+
+                    self.object_timer.activate()
 
     def canvas_remove(self):
         if mouse_buttons()[2] and not self.menu.rect.collidepoint(mouse_pos()):
             
+            # Delete Objects
+            selected_object = self.mouse_on_object()
+            if selected_object:
+                if EDITOR_DATA[selected_object.tile_id]['style'] not in ('player', 'sky'):
+                    selected_object.kill()
+
+            # Delete Tiles
             if self.canvas_data:
                 current_cell = self.get_current_cell()
                 if current_cell in self.canvas_data:
@@ -299,6 +317,7 @@ class Editor:
         # Updating
         self.animation_updates(dt)
         self.canvas_objects.update(dt)
+        self.object_timer.update()
 
         # Drawing
         self.display_surface.fill('gray')
