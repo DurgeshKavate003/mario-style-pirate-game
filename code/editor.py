@@ -72,7 +72,7 @@ class Editor:
             group = [self.canvas_objects, self.background])
 
 
-    # support
+    # Support
     def get_current_cell(self, obj = None):
         distance_to_origin = vector(mouse_pos()) - self.origin if not obj else vector(obj.distance_to_origin) - self.origin
 
@@ -90,14 +90,14 @@ class Editor:
 
     def check_neighbors(self, cell_pos):
 
-        # create a local cluster
+        # Create a local cluster
         cluster_size = 3
         local_cluster = [
             (cell_pos[0] + col - int(cluster_size / 2), cell_pos[1] + row - int(cluster_size / 2)) 
             for col in range(cluster_size) 
             for row in range(cluster_size)]
 
-        # check neighbors
+        # Check neighbors
         for cell in local_cluster:
             if cell in self.canvas_data:
                 self.canvas_data[cell].terrain_neighbors = []
@@ -106,11 +106,11 @@ class Editor:
                     neighbor_cell = (cell[0] + side[0],cell[1] + side[1])
 
                     if neighbor_cell in self.canvas_data:
-                    # water top neighbor
+                    # Water top neighbor
                         if self.canvas_data[neighbor_cell].has_water and self.canvas_data[cell].has_water and name == 'A':
                             self.canvas_data[cell].water_on_top = True
 
-                    # terrain neighbors
+                    # Terrain neighbors
                         if self.canvas_data[neighbor_cell].has_terrain:
                             self.canvas_data[cell].terrain_neighbors.append(name)
 
@@ -118,7 +118,7 @@ class Editor:
         self.water_bottom = load('../graphics/terrain/water/water_bottom.png').convert_alpha()
         self.sky_handle_surf = load('../graphics/cursors/handle.png').convert_alpha()
 
-        # animations
+        # Animations
         self.animations = {}
         for key, value in EDITOR_DATA.items():
             if value['graphics']:
@@ -129,7 +129,7 @@ class Editor:
                     'length': len(graphics)
                 }
 
-        # preview
+        # Preview
         self.preview_surfs = {key: load(value['preview']) for key, value in EDITOR_DATA.items() if value['preview']}
 
     def animation_update(self, dt):
@@ -145,7 +145,7 @@ class Editor:
 
     def create_grid(self):
         
-        # add objects to the tiles
+        # Add objects to the tiles
 
         for tile in self.canvas_data.values():
             tile.objects = []
@@ -154,12 +154,12 @@ class Editor:
             current_cell = self.get_current_cell(obj)
             offset = vector(obj.distance_to_origin) - (vector(current_cell) * TILE_SIZE)
 
-            if current_cell in self.canvas_data: # tile exists already
+            if current_cell in self.canvas_data: # Tile exists already
                 self.canvas_data[current_cell].add_id(obj.tile_id, offset)
-            else: # no tile exists yet 
+            else: # No tile exists yet 
                 self.canvas_data[current_cell] = CanvasTile(obj.tile_id, offset)
 
-        # create an empty grid
+        # Create an empty grid
         layers = {
             'water': {},
             'bg palms': {},
@@ -202,7 +202,7 @@ class Editor:
         return layers
 
 
-    # input
+    # Input
     def event_loop(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -317,7 +317,7 @@ class Editor:
                     self.object_drag_active = False
 
 
-    # drawing 
+    # Drawing 
     def draw_tile_lines(self):
         cols = WINDOW_WIDTH // TILE_SIZE
         rows = WINDOW_HEIGHT// TILE_SIZE
@@ -455,7 +455,7 @@ class Editor:
             self.current_clouds.append({'surf': surf, 'pos': pos, 'speed': randint(20,50)})
 
 
-    # update
+    # Update
     def run(self, dt):
         self.event_loop()
 
