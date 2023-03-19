@@ -8,6 +8,8 @@ from pygame.image import load
 from editor import Editor
 from level import Level
 
+from os import walk
+
 class Main:
 	def __init__(self):
 		pygame.init()
@@ -37,6 +39,20 @@ class Main:
 
 		self.particle = import_folder('../graphics/items/particle')
 
+		# Palm trees
+		self.palms = {
+			folder: import_folder(f'../graphics/terrain/palm/{folder}') for folder in list(walk('../graphics/terrain/palm'))[0][1]
+		}
+
+		# Enemies
+		self.spikes = load('../graphics/enemies/spikes/spikes.png').convert_alpha()
+		self.tooth = {
+			folder: import_folder(f'../graphics/enemies/tooth/{folder}') for folder in list(walk('../graphics/enemies/tooth'))[0][1]
+		}
+		self.shell = {
+			folder: import_folder(f'../graphics/enemies/shell_left/{folder}') for folder in list(walk('../graphics/enemies/shell_left'))[0][1]
+		}
+
 	def toggle(self):
 		self.editor_active = not self.editor_active
 
@@ -53,6 +69,12 @@ class Main:
 				'diamond': self.diamond,
 
 				'particle': self.particle,
+
+				'palms': self.palms,
+
+				'spikes': self.spikes,
+				'tooth': self.tooth,
+				'shell': self.shell
 				})
 
 	def run(self):
