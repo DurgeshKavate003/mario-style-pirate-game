@@ -1,11 +1,50 @@
 import pygame
 from pygame.math import Vector2 as vector
 
+from settings import *
+
 class Generic(pygame.sprite.Sprite):
 	def __init__(self, pos, surf, group):
 		super().__init__(group)
 		self.image = surf
 		self.rect = self.image.get_rect(topleft = pos)
+
+class Animated(Generic):
+	def __init__(self, assets, pos, group):
+		self.aniamtion_frames = assets
+		self.frame_index = 0
+
+		super().__init__(pos, self.aniamtion_frames[self.frame_index], group)
+
+	def animate(self, dt):
+		self.frame_index += ANIMATION_SPEED * dt
+		self.frame_index = 0 if self.frame_index >= len(self.aniamtion_frames) else self.frame_index
+		self.image = self.aniamtion_frames[int(self.frame_index)]
+
+	def update(self, dt):
+		self.animate(dt)
+
+class Particle(Animated):
+	def __init__(self, assets, pos, group):
+		super().__init__(assets, pos, group)
+
+		self.rect = self.image.get_rect(center = pos)
+
+	def animate(self, dt):
+		self.frame_index += ANIMATION_SPEED * dt
+
+		if self.frame_index < len(self.aniamtion_frames):
+			self.image = self.aniamtion_frames[int(self.frame_index)]
+
+		else:
+			self.kill()
+
+class Coin(Animated):
+	def __init__(self, coin_type, assets, pos, group):
+		super().__init__(assets, pos, group)
+
+		self.rect = self.image.get_rect(center = pos)
+		self.coin_type = coin_type
 
 class Player(Generic):
 	def __init__(self, pos, group):
@@ -29,7 +68,6 @@ class Player(Generic):
 	def move(self, dt):
 		self.pos += self.direction * self.speed * dt
 		self.rect.topleft = (round(self.pos.x),round(self.pos.y))
-
 
 	def update(self, dt):
 		self.input()

@@ -17,6 +17,7 @@ class Editor:
         
         # main setup 
         self.display_surface = pygame.display.get_surface()
+        pygame.display.set_caption(TITLE)
         self.canvas_data = {}
         self.switch = switch
 
