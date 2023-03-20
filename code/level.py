@@ -35,7 +35,7 @@ class Level:
 						Generic(pos, asset_dict['water bottom'],self.all_sprites)
 
 				match data:
-					case 0: self.player = Player(pos, self.all_sprites, self.collision_sprites)
+					case 0: self.player = Player(pos, asset_dict['player'], self.all_sprites, self.collision_sprites)
 
 					# Coins
 					case 4: Coin('gold', asset_dict['gold'], pos, [self.all_sprites, self.coin_sprites])
@@ -92,7 +92,6 @@ class Level:
 		# Drawing
 		self.all_sprites.update(dt)
 		self.all_sprites.draw(self.display_surface)
-		pygame.draw.rect(self.display_surface, 'yellow', self.player.hitbox)
 
 
 
