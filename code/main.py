@@ -52,6 +52,7 @@ class Main:
 		self.shell = {
 			folder: import_folder(f'../graphics/enemies/shell_left/{folder}') for folder in list(walk('../graphics/enemies/shell_left'))[0][1]
 		}
+		self.pearl = load('../graphics/enemies/pearl/pearl.png').convert_alpha()
 
 		# Player
 		self.player_graphics = {
@@ -80,6 +81,7 @@ class Main:
 				'spikes': self.spikes,
 				'tooth': self.tooth,
 				'shell': self.shell,
+				'pearl': self.pearl,
 
 				'player': self.player_graphics
 				})
