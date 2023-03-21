@@ -45,7 +45,7 @@ class Level:
 
 					# Enemies
 					case 7: Spikes(asset_dict['spikes'], pos, [self.all_sprites, self.damage_sprites])
-					case 8: Tooth(asset_dict['tooth'], pos, [self.all_sprites, self.damage_sprites])
+					case 8: Tooth(asset_dict['tooth'], pos, [self.all_sprites, self.damage_sprites], self.collision_sprites)
 					
 					case 9: 
 						Shell(

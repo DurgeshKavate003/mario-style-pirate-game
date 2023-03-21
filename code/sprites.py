@@ -5,6 +5,8 @@ from timer_ import Timer
 
 from settings import *
 
+from random import choice
+
 class Generic(pygame.sprite.Sprite):
 	def __init__(self, pos, surf, group, z = LEVEL_LAYERS['main']):
 		super().__init__(group)
@@ -62,8 +64,9 @@ class Spikes(Generic):
 		super().__init__(pos, surf, group)
 
 class Tooth(Generic):
-	def __init__(self, assets, pos, group):
+	def __init__(self, assets, pos, group, collision_sprites):
 
+		# General setup
 		self.animation_frames = assets
 		self.frame_index = 0
 
@@ -74,6 +77,49 @@ class Tooth(Generic):
 		super().__init__(pos, surf, group)
 		self.rect.bottom = self.rect.top + TILE_SIZE
 
+		# Movement
+		self.direction = vector(choice((-1, 1)), 0)
+		self.orientation = 'left' if self.direction.x < 0 else 'right'
+		self.pos = vector(self.rect.topleft)
+		self.speed = 120
+		self.collision_sprites = collision_sprites
+
+		if not [sprite for sprite in collision_sprites if sprite.rect.collidepoint(self.rect.midbottom + vector(0, 10))]:
+			self.kill()
+
+	def animate(self, dt):
+		current_animation = self.animation_frames[f'run_{self.orientation}']
+		self.frame_index += ANIMATION_SPEED * dt
+		self.frame_index = 0 if self.frame_index >= len(current_animation) else self.frame_index
+		self.image = current_animation[int(self.frame_index)]
+
+	def move(self, dt):
+		right_gap = self.rect.bottomright + vector(1, 1)
+		right_block = self.rect.midright + vector(1, 0)
+		left_gap = self.rect.bottomleft + vector(-1, 1)
+		left_block = self.rect.midleft + vector(-1, 0)
+
+		if self.direction.x > 0:
+			floor_sprites = [sprite for sprite in self.collision_sprites if sprite.rect.collidepoint(right_gap)]
+			wall_sprites = [sprite for sprite in self.collision_sprites if sprite.rect.collidepoint(right_block)]
+
+			if wall_sprites or not floor_sprites:
+				self.direction *= -1
+				self.orientation = 'left'
+
+		if self.direction.x < 0:
+			if not [sprite for sprite in self.collision_sprites if sprite.rect.collidepoint(left_gap)] \
+				or [sprite for sprite in self.collision_sprites if sprite.rect.collidepoint(left_block)]:
+				self.direction *= -1
+				self.orientation = 'right'
+
+		self.pos.x += self.direction.x * self.speed * dt
+		self.rect.x = round(self.pos.x)
+
+	def update(self, dt):
+		self.animate(dt)
+		self.move(dt)
+ 
 class Shell(Generic):
 	def __init__(self, orientation, assets, pos, group, pearl_surf, damage_sprites):
 		self.orientation = orientation
@@ -110,7 +156,6 @@ class Shell(Generic):
 			offset = (pearl_direction * 50) + vector(0, -10) if self.orientation == 'left' else (pearl_direction * 20) + vector(0, -10)
 			Pearl(self.rect.center + offset, pearl_direction, self.pearl_surf, [self.groups()[0], self.damage_sprites])
 			self.has_shot = True
-
 
 	def get_status(self):
 		if vector(self.player.rect.center).distance_to(vector(self.rect.center)) < 500 and not self.attack_countdown.active:
