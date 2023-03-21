@@ -4,10 +4,11 @@ from pygame.math import Vector2 as vector
 from settings import *
 
 class Generic(pygame.sprite.Sprite):
-	def __init__(self, pos, surf, group):
+	def __init__(self, pos, surf, group, z = LEVEL_LAYERS['main']):
 		super().__init__(group)
 		self.image = surf
 		self.rect = self.image.get_rect(topleft = pos)
+		self.z = z
 
 class Block(Generic):
 	def __init__(self, pos, size, group):
@@ -17,11 +18,11 @@ class Block(Generic):
 
 # Simple animated objects
 class Animated(Generic):
-	def __init__(self, assets, pos, group):
+	def __init__(self, assets, pos, group, z = LEVEL_LAYERS['main']):
 		self.animation_frames = assets
 		self.frame_index = 0
 
-		super().__init__(pos, self.animation_frames[self.frame_index], group)
+		super().__init__(pos, self.animation_frames[self.frame_index], group, z)
 
 	def animate(self, dt):
 		self.frame_index += ANIMATION_SPEED * dt
