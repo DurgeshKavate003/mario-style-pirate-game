@@ -4,6 +4,7 @@ from settings import *
 from support import *
 
 from pygame.image import load
+from pygame.mixer import Sound 
 
 from editor import Editor
 from level import Level
@@ -62,14 +63,27 @@ class Main:
 		# clouds
 		self.clouds = import_folder('../graphics/clouds')
 
+		# sounds
+		self.level_sounds = {
+			'coin': Sound('../audio/coin.wav'),
+			'hit': Sound('../audio/hit.wav'),
+			'jump': Sound('../audio/jump.wav'),
+			'music': Sound('../audio/SuperHero.ogg')
+		}
+
 	def toggle(self):
 		self.editor_active = not self.editor_active
+
+		if self.editor_active:
+			self.editor.editor_music.play()
 
 	def switch(self, grid = None):
 		self.transition.active = True
 		if grid:
-			self.level = Level(grid, self.switch,{
-				'land': self.land_tiles,
+			self.level = Level(
+				grid, 
+				self.switch,
+				{'land': self.land_tiles,
 				'water bottom': self.water_bottom,
 				'water top': self.water_top_animation,
 
@@ -88,8 +102,8 @@ class Main:
 
 				'player': self.player_graphics,
 
-				'clouds': self.clouds
-				})
+				'clouds': self.clouds}, 
+				self.level_sounds)
 
 	def run(self):
 		while True:
